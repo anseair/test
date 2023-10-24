@@ -1,6 +1,5 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css'
-import Home from "./components/Home";
 import React, {useState} from "react";
 import {navItems} from "./utils/constants";
 import SideBar from "./components/SideBar";
@@ -10,6 +9,7 @@ function App() {
     const [currentPage, setCurrentPage] = useState(navItems[4]);
     return (
         <section className="home container-fluid m-5 p-5">
+
             <div className="row flex-nowrap">
                 <div className="col-2 px-2 m-3">
                     <SideBar changePage={setCurrentPage}/>

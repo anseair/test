@@ -31,17 +31,12 @@ li{
 }
 
 .name {
-  /*box-shadow: 0 0 5px 5px rgba(221, 221, 221, 1);*/
-
   box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
-  /*box-shadow: 0 4px 6px -6px #222;*/
   padding: 10px;
 }
 
 .home {
   width: 800px;
-  /*border: 1px solid #b5a8a875;*/
-
 }
 
 .home ul {
@@ -55,7 +50,9 @@ table {
   border-collapse: collapse;
   border-spacing: 20px 20px;
 }
-
+tbody {
+  position: relative;
+}
 td {
   font-weight: 500;
   padding: 20px 10px 10px 10px;
@@ -83,28 +80,42 @@ select{
   transition: color 0.2s ease-in-out;
 }
 
-/*.button {*/
-/*  background-color: transparent;*/
-/*  border: 1px solid #ffffff;*/
-/*  padding: 4px 15px;*/
-/*  margin: 5px 0;*/
-/*  text-transform: uppercase;*/
-/*  letter-spacing: 1px;*/
-/*  font-size: 1em;*/
-/*}*/
-
 .button:hover {
   box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
-    /*background-color: #7a12127d;*/
-    /*color: #ffffff;*/
 }
 
-/*.form__button:hover {*/
+#someTable td {
+  padding: 10px;
+  border: 1px solid black;
+}
 
-/*}*/
+.my_pagination {
+  display: flex;
+  padding: 0;
+  list-style-type: none ;
+}
 
-/*.form__button {*/
-/*  padding: 4px 15px;*/
-/*  border-radius: 3px;*/
-/*  !*margin: 12px 0  4px 10px;*!*/
-/*}*/
+#pagination {
+  display: flex;
+  padding: 0;
+  list-style-type: none ;
+}
+
+.navigation__list button {
+  border: white;
+  background: white;
+  color: rgba(6, 31, 115, 0.58);
+  margin-right: 5px;
+  padding: 10px;
+}
+
+#pagination li{
+  color: rgba(6, 31, 115, 0.58);
+  margin-right: 5px;
+  padding: 10px;
+}
+
+#pagination li:hover, #pagination li.active{
+  box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
+  margin: 10px;
+}
