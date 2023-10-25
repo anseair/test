@@ -1,4 +1,8 @@
 import React, {useEffect, useState} from 'react';
+import iconStat from "../Icons/iconStat.png"
+import iconEdit from "../Icons/iconEdit.png"
+import iconDelete from "../Icons/iconDelete.png"
+import {current} from "@reduxjs/toolkit";
 
 const Menu = () => {
 
@@ -53,10 +57,19 @@ const Menu = () => {
         }
     }
 
+    // const [currentPage, setCurrentPage] = useState(1);
+
     useEffect(() => {
+        let currentPage= 1;
+
+        const paginationNumbers = document.getElementById("pagination-numbers"); //pagination
+        // const paginatedList = document.getElementById("paginated-list"); //table
+        // const listItems = paginatedList.querySelectorAll("li"); // trs
+
         const table = document.getElementById("table");
-        const trs = table.getElementsByTagName("tr");
-        let pagination = document.querySelector("#pagination");
+        const tbody = table.querySelector("tbody");
+        const trs = tbody.querySelectorAll("tr");
+        // let pagination = document.querySelector("#pagination");
         const array = [];
         for (let tr of trs) {
             let th_td = tr.getElementsByTagName('td');
@@ -67,63 +80,130 @@ const Menu = () => {
             th_td_array = th_td_array.map(tag => tag.innerText); // get the text of each element
             array.push(th_td_array);
         }
-
-        let notesOnPage = 3;
-        let countOfItems = Math.ceil(array.slice(1, array.length - 1).length / notesOnPage);
+        let paginationLimit  = 4;
+       let pageCount = Math.ceil(array.length / paginationLimit );
         let items = [];
-        for (let i = 1; i <= countOfItems; i++) {
-            let li = document.createElement("li");
-            li.innerHTML = i;
-            pagination.appendChild(li);
-            items.push(li);
-        }
-        showPage(items[0], notesOnPage, array);
 
+        for (let i = 1; i <= pageCount; i++) {
+            const pageNumber = document.createElement("button");
+            pageNumber.className = "pagination-number";
+            pageNumber.innerHTML = i;
+            pageNumber.setAttribute("page-index", i);
+            paginationNumbers.appendChild(pageNumber);
+            items.push(pageNumber);
+        };
+
+        setPage(items[0], paginationLimit, pageCount);
+
+
+        // document.querySelectorAll(".pagination-number").forEach((button) => {
+        //     const pageIndex = Number(button.getAttribute("page-index"));
+        //     if (pageIndex) {
+        //         button.addEventListener("click", () => {
+        //             setPage(pageIndex);
+        //         });
+        //     }
+        // });
         for (let item of items) {
             item.addEventListener('click', function () {
-                showPage(this, notesOnPage, array);
+                setPage(this, paginationLimit, pageCount);
             });
         }
+
+
+        // for (let i = 1; i <= pageCount; i++) {
+            // let li = document.createElement("li");
+            // li.innerHTML = i;
+            // paginationNumbers.appendChild(li);
+            // items.push(li);
+        // }
+        // showPage(items[0], notesOnPage, array);
+
+
+        // for (let item of items) {
+        //     item.addEventListener('click', function () {
+        //         showPage(this, notesOnPage, array);
+        //     });
+        // }
     }, []);
 
+    const setPage = (item, paginationLimit, pageCount) => {
+        let currentPage = 1;
 
-    const showPage = (item, notesOnPage, array) => {
-        const table = document.getElementById("table");
-        let active = document.querySelector("#pagination li.active");
-        if (active) {
-            active.classList.remove('active');
-        }
-        item.classList.add('active');
-
-        let pageNum = +item.innerHTML;
-        let start = (pageNum - 1) * notesOnPage;
-        let end = start + notesOnPage;
-
-        const tbody = table.querySelector("tbody");
-        const rows = tbody.querySelectorAll("tr");
-        rows.forEach((row, index) => {
-            if (index < start || index >= end) {
-                row.style.display = "none";
-            } else {
-                row.style.display = "";
+        const nextButton = document.getElementById("next-button");
+        const prevButton = document.getElementById("prev-button");
+        document.querySelectorAll(".pagination-number").forEach((button) => {
+            if (button) {
+                button.classList.remove("active");
             }
+            item.classList.add('active');
         });
+
+        if (currentPage === 1) {
+            disableButton(prevButton);
+        } else {
+            enableButton(prevButton);
+        }
+        if (pageCount === currentPage) {
+            disableButton(nextButton);
+        } else {
+            enableButton(nextButton);
+        }
+
+            let pageNum = +item.innerHTML;
+            let start = (pageNum- 1) * paginationLimit;
+            let end = start + paginationLimit;
+
+            const table = document.getElementById("table");
+            const tbody = table.querySelector("tbody");
+            const rows = tbody.querySelectorAll("tr");
+            rows.forEach((row, index) => {
+                if (index < start || index >= end) {
+                    row.style.display = "none";
+                } else {
+                    row.style.display = "";
+                }
+            });
     };
 
-    // const previousPage = () => {
-    //
-    //     if(currPage > 1) {
-    //         currPage--;
-    //         // showRows(currPage);
-    //     }
-    // }
+    const disableButton = (button) => {
+        button.classList.add("disabled");
+        button.setAttribute("disabled", true);
+    };
 
-    // const nextPage = () => {
-    //     if (currPage < Math.ceil(table.rows.length / rowsPerPage)) {
-    //         currPage++;
-    //         // showRows(currPage);
+    const enableButton = (button) => {
+        button.classList.remove("disabled");
+        button.removeAttribute("disabled");
+    };
+
+    // const showPage = (item, notesOnPage, array) => {
+    //     const table = document.getElementById("table");
+    //     let active = document.querySelector("#pagination li.active");
+    //     if (active) {
+    //         active.classList.remove('active');
     //     }
-    // }
+    //     item.classList.add('active');
+    //
+    //     let pageNum = +item.innerHTML;
+    //     let start = (pageNum - 1) * notesOnPage;
+    //     let end = start + notesOnPage;
+    //
+    //     const tbody = table.querySelector("tbody");
+    //     const rows = tbody.querySelectorAll("tr");
+    //     rows.forEach((row, index) => {
+    //         if (index < start || index >= end) {
+    //             row.style.display = "none";
+    //         } else {
+    //             row.style.display = "";
+    //         }
+    //     });
+    // };
+
+    const prevPage = () => {
+    }
+
+    const nextPage = () => {
+    }
 
     return (
         <>
@@ -143,17 +223,22 @@ const Menu = () => {
                         <th><input id="export" type="text" placeholder="Экспорт" onKeyUp={filterExport}/></th>
                     </tr>
                 </thead>
-                <tbody >
+                <tbody>
                     <tr>
                         <td>Какое меню 1</td>
                         <td>Западная Москва река и лодка</td>
                         <td>Сушу кручу</td>
                         <td>Активно</td>
                         <td>Яндекс</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                     <tr>
                         <td> 2</td>
@@ -161,10 +246,15 @@ const Menu = () => {
                         <td>Сушу кручу</td>
                         <td>Не активно</td>
                         <td>Мобильное приложение</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                     <tr>
                         <td>Какое меню 3</td>
@@ -172,10 +262,15 @@ const Menu = () => {
                         <td>Сушу кручу</td>
                         <td>Активно</td>
                         <td>Мобильное приложение</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                     <tr>
                         <td>Какое меню 4</td>
@@ -183,10 +278,15 @@ const Menu = () => {
                         <td>Сушу </td>
                         <td>Не активно</td>
                         <td>Яндекс</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                     <tr>
                         <td>5</td>
@@ -194,75 +294,117 @@ const Menu = () => {
                         <td>Сушу </td>
                         <td>Активно</td>
                         <td>Мобильное приложение</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                     <tr>
-                        <td> 2</td>
+                        <td> 6</td>
                         <td>Восточная Москва река и лодка</td>
                         <td>Сушу кручу</td>
                         <td>Не активно</td>
                         <td>Мобильное приложение</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                     <tr>
-                        <td>Какое меню 3</td>
+                        <td>Какое меню 7</td>
                         <td>Западная Москва река и лодка</td>
                         <td>Сушу кручу</td>
                         <td>Активно</td>
                         <td>Мобильное приложение</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                     <tr>
-                        <td>Какое меню 4</td>
+                        <td>Какое меню 8</td>
                         <td>Восточная Москва река и лодка</td>
                         <td>Сушу </td>
                         <td>Не активно</td>
                         <td>Яндекс</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                     <tr>
-                        <td>5</td>
+                        <td>9</td>
                         <td>Западная Москва река и лодка</td>
                         <td>Сушу </td>
                         <td>Активно</td>
                         <td>Мобильное приложение</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                     <tr>
-                        <td> 2</td>
+                        <td> 10</td>
                         <td>Восточная Москва река и лодка</td>
                         <td>Сушу кручу</td>
                         <td>Не активно</td>
                         <td>Мобильное приложение</td>
-                        <td></td>
-                        <td>статистика</td>
-                        <td>изменить</td>
-                        <td>удалить</td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconStat}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconEdit}/>
+                        </td>
+                        <td className="my_icon">
+                            <img width="20" height="20" src={iconDelete}/>
+                        </td>
                     </tr>
                 </tbody>
-                <div className="nav navigation__list my_pagination" >
-                    <button className="button" >&#10094;</button>
-                    <ul className="nav navigation__list" id="pagination"></ul>
-                    <button className="button" >&#10095;</button>
-                </div>
             </table>
         </div>
-        </>
+    <div className="pagination-container">
+        <button className="pagination-button" id="prev-button" onClick={prevPage}>
+            &lt;
+        </button>
+
+        <div id="pagination-numbers">
+        </div>
+        {/*<ul id="pagination"></ul>*/}
+
+        <button className="pagination-button" id="next-button" onClick={nextPage}>
+            &gt;
+        </button>
+        {/*<div className="nav navigation__list my_pagination" >*/}
+        {/*<button className="button">&lt;</button>*/}
+        {/*<ul id="pagination"></ul>*/}
+        {/*<button className="button">&gt;</button>*/}
+    </div>
+            </>
     );
 };
 

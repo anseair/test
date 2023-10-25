@@ -4,21 +4,21 @@ h3,
 h4,
 h5,
 h6,
-p {
-  margin: 0;
-}
-
 ul,
 ol,
 li{
   margin: 0;
   padding: 0;
   list-style: none;
+  color: rgba(2, 21, 98, 0.8);
+  font-weight: 600;
+
 }
 
 .link {
   text-decoration: none;
-  color: midnightblue;
+  color: rgba(2, 21, 98, 0.8);
+  font-weight: 600;
 }
 
 .link:before {
@@ -31,17 +31,26 @@ li{
 }
 
 .name {
+  width: 200px;
+}
+
+.name thead{
   box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
-  padding: 10px;
+}
+
+.name p{
+  font-weight: 300;
 }
 
 .home {
-  width: 800px;
+  width: 500px;
+  margin-bottom: 100px;
 }
 
 .home ul {
   margin: 5px 0 ;
 }
+
 .home p {
   margin: 5px 0 ;
 }
@@ -50,44 +59,74 @@ table {
   border-collapse: collapse;
   border-spacing: 20px 20px;
 }
-tbody {
-  position: relative;
-}
+
 td {
-  font-weight: 500;
+  width: 150px;
   padding: 20px 10px 10px 10px;
+  color: rgba(2, 21, 98, 0.8);
+  font-weight: 600;
+}
+
+th {
+  text-align: left;
+  color: rgba(2, 21, 98, 0.8);
+  font-weight: 600;
+  padding: 10px 10px;
 }
 
 table tr.first-row{
-  border-bottom: 1px solid midnightblue;
+  border-bottom: 1px solid rgba(3, 26, 110, 0.8);
+  color: rgba(2, 21, 98, 0.8);
+  font-weight: 600;
 }
 
-table input {
-  color: rgba(6, 31, 115, 0.58);
+table td.my_icon {
+  width: auto;
+}
+
+input {
+  color: rgba(2, 21, 98, 0.8);
+  width: 100px;
   padding: 5px;
   border-radius: 6px;
   border: 1px solid rgba(6, 31, 115, 0.58);
 }
 
-select{
-  color: rgba(6, 31, 115, 0.58)
+input:focus {
+  outline: 0;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
+  border: 2px solid rgba(6, 31, 115, 0.58);
+}
+
+input::placeholder {
+  color: rgba(2, 21, 98, 0.8);
+}
+
+select {
+  border-radius: 6px;
+  padding: 5px;
+  color: rgba(2, 21, 98, 0.8);
+  border: 1px solid rgba(6, 31, 115, 0.58);
+}
+
+select:focus {
+  outline: 0;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
+  border: 2px solid rgba(6, 31, 115, 0.58);
 }
 
 .navigation__list li {
   color: black;
-  margin: 10px;
   letter-spacing: 1px;
   transition: color 0.2s ease-in-out;
+  padding: 5px;
 }
 
-.button:hover {
+.navigation__list .button:hover, .navigation__list .button:focus  {
   box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
+  padding: 5px;
 }
 
-#someTable td {
-  padding: 10px;
-  border: 1px solid black;
-}
 
 .my_pagination {
   display: flex;
@@ -101,21 +140,58 @@ select{
   list-style-type: none ;
 }
 
-.navigation__list button {
-  border: white;
-  background: white;
-  color: rgba(6, 31, 115, 0.58);
-  margin-right: 5px;
-  padding: 10px;
-}
-
 #pagination li{
-  color: rgba(6, 31, 115, 0.58);
+  color: rgba(2, 21, 98, 0.8);
   margin-right: 5px;
   padding: 10px;
 }
 
 #pagination li:hover, #pagination li.active{
   box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
-  margin: 10px;
+  margin-right: 5px;
+  padding: 10px;
+}
+
+.navigation__list button{
+  border: white;
+  background: white;
+  color: rgba(2, 21, 98, 0.8);
+  margin-right: 5px;
+  padding: 10px;
+}
+
+.navigation__list button:hover, .navigation__list button.active{
+  box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
+  margin-right: 5px;
+  padding: 10px;
+}
+
+.pagination-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: left;
+}
+
+.pagination-number,
+.pagination-button{
+
+  border: white;
+  background: white;
+  color: rgba(2, 21, 98, 0.8);
+  margin-right: 5px;
+  padding: 10px;
+
+  /*font-size: 1.1rem;*/
+  /*background-color: transparent;*/
+  /*border: none;*/
+  /*margin: 0.25rem 0.25rem;*/
+  /*cursor: pointer;*/
+  /*height: 2.5rem;*/
+  /*width: 2.5rem;*/
+  /*border-radius: .2rem;*/
+}
+.pagination-button:hover, .pagination-button.active, .pagination-number:hover, .pagination-number.active{
+  box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
+  margin-right: 5px;
+  padding: 10px;
 }

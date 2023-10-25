@@ -14,27 +14,38 @@ const SideBar = () => {
 
     return (
         <>
-            <div className="name">
-                <p>НАЗВАНИЕ ФИРМЫ</p>
-                <p>Лоскутникова В.П.</p>
-                <hr />
-                <p>СКЛАДСКОЙ УЧЁТ</p>
-            </div>
-            <p>Филиалы</p>
-            <select>
-                <option value=''>Выберите филиал</option>
-                {filials.map(f => {
-                    return <option key={f} value={f}>{f}</option>
-                })}
-            </select>
-            <hr className="m-0"/>
-            <div className="d-flex flex-column aling-items-start">
-                {/*<div className="navbar navbar-inverse navbar-fixed-left">*/}
-                    <ul className="nav navigation__list">
-                        {navItems.map(i => <NavItem key={i.route} item={i}/>)}
-                    </ul>
-                {/*</div>*/}
-            </div>
+                <table className="name">
+                    <thead>
+                        <tr className="first-row">
+                            <th>НАЗВАНИЕ ФИРМЫ
+                            <p>Лоскутникова В.П.</p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>СКЛАДСКОЙ УЧЁТ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className="first-row">
+                            <td>
+                                <p>Филиалы</p>
+                                <select>
+                                    <option value=''>Выберите филиал</option>
+                                    {filials.map(f => {
+                                        return <option key={f} value={f}>{f}</option>
+                                    })}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <ul className="nav navigation__list">
+                                    {navItems.map(i => <NavItem key={i.route} item={i}/>)}
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
         </>
     );
 };
