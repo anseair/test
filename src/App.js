@@ -4,6 +4,7 @@ import React, {useState} from "react";
 import {navItems} from "./utils/constants";
 import SideBar from "./components/SideBar";
 import Info from "./components/Info";
+import * as app from "react";
 
 function App() {
     const [currentPage, setCurrentPage] = useState(navItems[4]);

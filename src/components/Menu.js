@@ -58,14 +58,47 @@ const Menu = () => {
     }
 
     // const [currentPage, setCurrentPage] = useState(1);
-
+    let currentPage= 1;
     useEffect(() => {
-        let currentPage= 1;
+        let pageCount = countPage();
+        const paginationNumbers = document.getElementById("pagination-numbers");
+        for (let i = 1; i <= pageCount; i++) {
+            const pageNumber = document.createElement("button");
+            pageNumber.className = "pagination-number";
+            pageNumber.innerHTML = i;
+            pageNumber.setAttribute("page-index", i);
+            paginationNumbers.appendChild(pageNumber);
+            // items.push(pageNumber);
+        };
+        setPage(1);
 
-        const paginationNumbers = document.getElementById("pagination-numbers"); //pagination
-        // const paginatedList = document.getElementById("paginated-list"); //table
-        // const listItems = paginatedList.querySelectorAll("li"); // trs
+        const nextButton = document.getElementById("next-button");
+        const prevButton = document.getElementById("prev-button");
+        prevButton.addEventListener("click", () => {
+            setPage(currentPage - 1);
+        });
+        nextButton.addEventListener("click", () => {
+            setPage(currentPage + 1);
+        });
 
+        document.querySelectorAll(".pagination-number").forEach((button) => {
+            const pageIndex = Number(button.getAttribute("page-index"));
+            if (pageIndex) {
+                button.addEventListener("click", () => {
+                    setPage(pageIndex);
+                });
+            }
+        });
+
+        // for (let item of items) {
+        //     item.addEventListener('click', function () {
+        //         setPage(this, paginationLimit, pageCount);
+        //     });
+        // }
+
+    }, []);
+
+    const countPage = () => {
         const table = document.getElementById("table");
         const tbody = table.querySelector("tbody");
         const trs = tbody.querySelectorAll("tr");
@@ -80,64 +113,33 @@ const Menu = () => {
             th_td_array = th_td_array.map(tag => tag.innerText); // get the text of each element
             array.push(th_td_array);
         }
+
         let paginationLimit  = 4;
-       let pageCount = Math.ceil(array.length / paginationLimit );
-        let items = [];
+        let pageCount = Math.ceil(array.length / paginationLimit );
+        return pageCount;
+    }
 
-        for (let i = 1; i <= pageCount; i++) {
-            const pageNumber = document.createElement("button");
-            pageNumber.className = "pagination-number";
-            pageNumber.innerHTML = i;
-            pageNumber.setAttribute("page-index", i);
-            paginationNumbers.appendChild(pageNumber);
-            items.push(pageNumber);
-        };
-
-        setPage(items[0], paginationLimit, pageCount);
-
-
+    const setPage = (pageNum) => {
+        currentPage = pageNum;
         // document.querySelectorAll(".pagination-number").forEach((button) => {
-        //     const pageIndex = Number(button.getAttribute("page-index"));
-        //     if (pageIndex) {
-        //         button.addEventListener("click", () => {
-        //             setPage(pageIndex);
-        //         });
+        //     if (button) {
+        //         button.classList.remove("active");
         //     }
+        //     item.classList.add('active');
         // });
-        for (let item of items) {
-            item.addEventListener('click', function () {
-                setPage(this, paginationLimit, pageCount);
-            });
-        }
 
-
-        // for (let i = 1; i <= pageCount; i++) {
-            // let li = document.createElement("li");
-            // li.innerHTML = i;
-            // paginationNumbers.appendChild(li);
-            // items.push(li);
-        // }
-        // showPage(items[0], notesOnPage, array);
-
-
-        // for (let item of items) {
-        //     item.addEventListener('click', function () {
-        //         showPage(this, notesOnPage, array);
-        //     });
-        // }
-    }, []);
-
-    const setPage = (item, paginationLimit, pageCount) => {
-        let currentPage = 1;
+        document.querySelectorAll(".pagination-number").forEach((button) => {
+            button.classList.remove("active");
+            const pageIndex = Number(button.getAttribute("page-index"));
+            if (pageIndex == currentPage) {
+                button.classList.add("active");
+            }
+        });
 
         const nextButton = document.getElementById("next-button");
         const prevButton = document.getElementById("prev-button");
-        document.querySelectorAll(".pagination-number").forEach((button) => {
-            if (button) {
-                button.classList.remove("active");
-            }
-            item.classList.add('active');
-        });
+        let pageCount = countPage();
+        let paginationLimit  = 4;
 
         if (currentPage === 1) {
             disableButton(prevButton);
@@ -149,11 +151,8 @@ const Menu = () => {
         } else {
             enableButton(nextButton);
         }
-
-            let pageNum = +item.innerHTML;
-            let start = (pageNum- 1) * paginationLimit;
-            let end = start + paginationLimit;
-
+            let start = (pageNum - 1) * paginationLimit;
+            let end = pageNum * paginationLimit;
             const table = document.getElementById("table");
             const tbody = table.querySelector("tbody");
             const rows = tbody.querySelectorAll("tr");
@@ -164,6 +163,7 @@ const Menu = () => {
                     row.style.display = "";
                 }
             });
+
     };
 
     const disableButton = (button) => {
@@ -175,35 +175,6 @@ const Menu = () => {
         button.classList.remove("disabled");
         button.removeAttribute("disabled");
     };
-
-    // const showPage = (item, notesOnPage, array) => {
-    //     const table = document.getElementById("table");
-    //     let active = document.querySelector("#pagination li.active");
-    //     if (active) {
-    //         active.classList.remove('active');
-    //     }
-    //     item.classList.add('active');
-    //
-    //     let pageNum = +item.innerHTML;
-    //     let start = (pageNum - 1) * notesOnPage;
-    //     let end = start + notesOnPage;
-    //
-    //     const tbody = table.querySelector("tbody");
-    //     const rows = tbody.querySelectorAll("tr");
-    //     rows.forEach((row, index) => {
-    //         if (index < start || index >= end) {
-    //             row.style.display = "none";
-    //         } else {
-    //             row.style.display = "";
-    //         }
-    //     });
-    // };
-
-    const prevPage = () => {
-    }
-
-    const nextPage = () => {
-    }
 
     return (
         <>
@@ -387,24 +358,12 @@ const Menu = () => {
                 </tbody>
             </table>
         </div>
-    <div className="pagination-container">
-        <button className="pagination-button" id="prev-button" onClick={prevPage}>
-            &lt;
-        </button>
-
-        <div id="pagination-numbers">
+        <div className="pagination-container">
+            <button className="pagination-button" id="prev-button">&lt;</button>
+            <div id="pagination-numbers"></div>
+            <button className="pagination-button" id="next-button">&gt;</button>
         </div>
-        {/*<ul id="pagination"></ul>*/}
-
-        <button className="pagination-button" id="next-button" onClick={nextPage}>
-            &gt;
-        </button>
-        {/*<div className="nav navigation__list my_pagination" >*/}
-        {/*<button className="button">&lt;</button>*/}
-        {/*<ul id="pagination"></ul>*/}
-        {/*<button className="button">&gt;</button>*/}
-    </div>
-            </>
+        </>
     );
 };
 

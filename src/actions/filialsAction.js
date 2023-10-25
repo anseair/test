@@ -1,14 +1,15 @@
 import {baseUrl} from "../utils/constants";
 import {putFilials} from "../slices/filialsSlices";
 
+
 export const filialsAction = () => {
     return async (dispatch) => {
         const response = await (fetch(`${baseUrl}/filial`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
-            },
-            mode: "no-cors"
+                'Content-Type': 'application/json',
+                // "Access-Control-Allow-Origin": "https://localhost:3000"
+            }
         }));
         if(response.ok) {
             const data = await response.json();
@@ -17,8 +18,7 @@ export const filialsAction = () => {
                 const info = {
                     name: data[i].name
                 }
-                names.push(info);
-            }
+                names.push(info);}
             dispatch(putFilials(names));
         } else {
             throw new Error(response.status.toString());
