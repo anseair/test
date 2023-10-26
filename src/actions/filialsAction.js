@@ -4,21 +4,15 @@ import {putFilials} from "../slices/filialsSlices";
 
 export const filialsAction = () => {
     return async (dispatch) => {
-        const response = await (fetch(`${baseUrl}/filial`, {
+        const response = await (fetch(`${baseUrl}filial/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                // "Access-Control-Allow-Origin": "https://localhost:3000"
             }
         }));
         if(response.ok) {
             const data = await response.json();
-            const names = [];
-            for (let i = 0; i < data.length; i++) {
-                const info = {
-                    name: data[i].name
-                }
-                names.push(info);}
+            const names = data.map(d => d.name);
             dispatch(putFilials(names));
         } else {
             throw new Error(response.status.toString());
