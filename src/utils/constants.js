@@ -10,4 +10,5 @@ export const navItems = [
     {title: "Накладные", route: "invoices"},
 ]
 
-export const baseUrl = 'https://testjob.checkport.ru/'
+export const baseUrl = 'https://testjob.checkport.ru';
+export const limit = 5;

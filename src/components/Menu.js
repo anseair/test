@@ -3,8 +3,17 @@ import iconStat from "../Icons/iconStat.png"
 import iconEdit from "../Icons/iconEdit.png"
 import iconDelete from "../Icons/iconDelete.png"
 import {current} from "@reduxjs/toolkit";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchMenu, menuAction} from "../actions/menuAction";
+import {fetchFilials, filialsAction} from "../actions/filialsAction";
+import {logDOM} from "@testing-library/react";
+import {limit} from "../utils/constants";
+import button from "bootstrap/js/src/button";
 
-const Menu = () => {
+const Menu = ({menu}) => {
+    const {filials} = useSelector(state => state.filials);
+    const [filial, setFilial] = useState();
+    const dispatch = useDispatch();
 
     const filter = (name, num) => {
         const input = document.getElementById(name);
@@ -57,10 +66,9 @@ const Menu = () => {
         }
     }
 
-    // const [currentPage, setCurrentPage] = useState(1);
     let currentPage= 1;
     useEffect(() => {
-        let pageCount = countPage();
+        let pageCount = menu.max_pages;
         const paginationNumbers = document.getElementById("pagination-numbers");
         for (let i = 1; i <= pageCount; i++) {
             const pageNumber = document.createElement("button");
@@ -68,7 +76,6 @@ const Menu = () => {
             pageNumber.innerHTML = i;
             pageNumber.setAttribute("page-index", i);
             paginationNumbers.appendChild(pageNumber);
-            // items.push(pageNumber);
         };
         setPage(1);
 
@@ -85,48 +92,70 @@ const Menu = () => {
             const pageIndex = Number(button.getAttribute("page-index"));
             if (pageIndex) {
                 button.addEventListener("click", () => {
-                    setPage(pageIndex);
+                    // setPage(pageIndex);
+                    const filial = JSON.parse(localStorage.getItem('filial'));
+                    dispatch(fetchMenu(filial.id, pageIndex));
                 });
             }
         });
-
-        // for (let item of items) {
-        //     item.addEventListener('click', function () {
-        //         setPage(this, paginationLimit, pageCount);
-        //     });
-        // }
-
-    }, []);
-
-    const countPage = () => {
-        const table = document.getElementById("table");
-        const tbody = table.querySelector("tbody");
-        const trs = tbody.querySelectorAll("tr");
-        // let pagination = document.querySelector("#pagination");
-        const array = [];
-        for (let tr of trs) {
-            let th_td = tr.getElementsByTagName('td');
-            if (th_td.length == 0) {
-                th_td = tr.getElementsByTagName('th');
-            }
-            let th_td_array = Array.from(th_td); // convert HTMLCollection to an Array
-            th_td_array = th_td_array.map(tag => tag.innerText); // get the text of each element
-            array.push(th_td_array);
-        }
-
-        let paginationLimit  = 4;
-        let pageCount = Math.ceil(array.length / paginationLimit );
-        return pageCount;
-    }
+    }, [menu.data]);
 
     const setPage = (pageNum) => {
         currentPage = pageNum;
-        // document.querySelectorAll(".pagination-number").forEach((button) => {
-        //     if (button) {
-        //         button.classList.remove("active");
-        //     }
-        //     item.classList.add('active');
-        // });
+        let pageCount = menu.max_pages;
+        let paginationLimit  = limit;
+        const table = document.getElementById("table");
+        const tbody = table.querySelector("tbody");
+        if (tbody) {
+            tbody.innerHTML = '';
+            if (menu.data) {
+                menu.data.forEach(item => {
+                    const tr = document.createElement("tr");
+                    const name = document.createElement('td');
+                    const filial = document.createElement('td');
+                    const tt = document.createElement('td');
+                    const active = document.createElement('td');
+                    const exportt = document.createElement('td');
+                    name.innerText = item.name;
+                    filial.innerText = item.filial.name;
+                    tt.innerText = item.tt.name;
+                    active.innerText = item.active === true ? 'активно' : 'неактивно';
+                    exportt.innerText = item.export.map(e => e);
+
+                    const stat = document.createElement('td');
+                    stat.className = "my_icon";
+                    const edit = document.createElement('td');
+                    edit.className = "my_icon";
+                    const deletee = document.createElement('td');
+                    deletee.className = "my_icon";
+                    const imgStat = document.createElement('img');
+                    imgStat.src = iconStat;
+                    imgStat.width = 20;
+                    imgStat.height = 20;
+                    const imgEdit = document.createElement('img');
+                    imgEdit.src = iconEdit;
+                    imgEdit.width = 20;
+                    imgEdit.height = 20;
+                    const imgDeletee = document.createElement('img');
+                    imgDeletee.src = iconDelete;
+                    imgDeletee.width = 20;
+                    imgDeletee.height = 20;
+                    stat.appendChild(imgStat);
+                    edit.appendChild(imgEdit);
+                    deletee.appendChild(imgDeletee);
+
+                    tr.appendChild(name);
+                    tr.appendChild(filial);
+                    tr.appendChild(tt);
+                    tr.appendChild(active);
+                    tr.appendChild(exportt);
+                    tr.appendChild(stat);
+                    tr.appendChild(edit);
+                    tr.appendChild(deletee);
+                    tbody.appendChild(tr);
+                });
+            }
+        }
 
         document.querySelectorAll(".pagination-number").forEach((button) => {
             button.classList.remove("active");
@@ -138,9 +167,6 @@ const Menu = () => {
 
         const nextButton = document.getElementById("next-button");
         const prevButton = document.getElementById("prev-button");
-        let pageCount = countPage();
-        let paginationLimit  = 4;
-
         if (currentPage === 1) {
             disableButton(prevButton);
         } else {
@@ -151,19 +177,18 @@ const Menu = () => {
         } else {
             enableButton(nextButton);
         }
-            let start = (pageNum - 1) * paginationLimit;
-            let end = pageNum * paginationLimit;
-            const table = document.getElementById("table");
-            const tbody = table.querySelector("tbody");
-            const rows = tbody.querySelectorAll("tr");
-            rows.forEach((row, index) => {
-                if (index < start || index >= end) {
-                    row.style.display = "none";
-                } else {
-                    row.style.display = "";
-                }
-            });
 
+        let start = (pageNum - 1) * paginationLimit;
+        let end = pageNum * paginationLimit;
+
+        const rows = tbody.querySelectorAll("tr");
+        rows.forEach((row, index) => {
+            if (index < start || index >= end) {
+                row.style.display = "none";
+            } else {
+                row.style.display = "";
+            }
+        });
     };
 
     const disableButton = (button) => {
@@ -188,174 +213,13 @@ const Menu = () => {
                         <th>
                             <select id="active" onChange={filterActive}>
                                 <option>активно</option>
-                                <option>не активно</option>
+                                <option>неактивно</option>
                             </select>
                         </th>
                         <th><input id="export" type="text" placeholder="Экспорт" onKeyUp={filterExport}/></th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Какое меню 1</td>
-                        <td>Западная Москва река и лодка</td>
-                        <td>Сушу кручу</td>
-                        <td>Активно</td>
-                        <td>Яндекс</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td> 2</td>
-                        <td>Восточная Москва река и лодка</td>
-                        <td>Сушу кручу</td>
-                        <td>Не активно</td>
-                        <td>Мобильное приложение</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Какое меню 3</td>
-                        <td>Западная Москва река и лодка</td>
-                        <td>Сушу кручу</td>
-                        <td>Активно</td>
-                        <td>Мобильное приложение</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Какое меню 4</td>
-                        <td>Восточная Москва река и лодка</td>
-                        <td>Сушу </td>
-                        <td>Не активно</td>
-                        <td>Яндекс</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Западная Москва река и лодка</td>
-                        <td>Сушу </td>
-                        <td>Активно</td>
-                        <td>Мобильное приложение</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td> 6</td>
-                        <td>Восточная Москва река и лодка</td>
-                        <td>Сушу кручу</td>
-                        <td>Не активно</td>
-                        <td>Мобильное приложение</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Какое меню 7</td>
-                        <td>Западная Москва река и лодка</td>
-                        <td>Сушу кручу</td>
-                        <td>Активно</td>
-                        <td>Мобильное приложение</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Какое меню 8</td>
-                        <td>Восточная Москва река и лодка</td>
-                        <td>Сушу </td>
-                        <td>Не активно</td>
-                        <td>Яндекс</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>Западная Москва река и лодка</td>
-                        <td>Сушу </td>
-                        <td>Активно</td>
-                        <td>Мобильное приложение</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td> 10</td>
-                        <td>Восточная Москва река и лодка</td>
-                        <td>Сушу кручу</td>
-                        <td>Не активно</td>
-                        <td>Мобильное приложение</td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconStat}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconEdit}/>
-                        </td>
-                        <td className="my_icon">
-                            <img width="20" height="20" src={iconDelete}/>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
         <div className="pagination-container">

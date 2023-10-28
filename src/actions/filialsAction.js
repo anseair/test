@@ -2,9 +2,9 @@ import {baseUrl} from "../utils/constants";
 import {putFilials} from "../slices/filialsSlices";
 
 
-export const filialsAction = () => {
+export const fetchFilials = () => {
     return async (dispatch) => {
-        const response = await (fetch(`${baseUrl}filial/`, {
+        const response = await (fetch(`${baseUrl}/filial/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -12,8 +12,8 @@ export const filialsAction = () => {
         }));
         if(response.ok) {
             const data = await response.json();
-            const names = data.map(d => d.name);
-            dispatch(putFilials(names));
+            dispatch(putFilials(data));
+            // localStorage.setItem('filials', JSON.stringify(data));
         } else {
             throw new Error(response.status.toString());
         }
