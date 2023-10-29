@@ -1,13 +1,14 @@
 import React, {useEffect} from 'react';
-import {Link} from "react-router-dom";
-import {fetchFilials} from "../actions/filialsAction";
+import {Link, NavLink} from "react-router-dom";
 
 const NavItem = ({item}) => {
 
-
     return (
         <li >
-            <Link className="link button" to={item.route}>{item.title}</Link>
+            <NavLink
+                activeclassname="active"
+                className='link button'
+                to={item.route} >{item.title}</NavLink>
         </li >
     );
 };

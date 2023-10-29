@@ -108,7 +108,9 @@ const Menu = ({menu}) => {
         const tbody = table.querySelector("tbody");
         if (tbody) {
             tbody.innerHTML = '';
+
             if (menu.data) {
+
                 menu.data.forEach(item => {
                     const tr = document.createElement("tr");
                     const name = document.createElement('td');

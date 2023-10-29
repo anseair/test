@@ -22,14 +22,6 @@ function App() {
 
     useEffect(() => {
         dispatch(fetchFilials());
-        let pagination = document.querySelector(".navigation__list");
-        let li = pagination.getElementsByTagName("li");
-        // let button = li.querySelector(".button");
-        let active = document.querySelector(".navigation__list li  .button.active");
-        if (active) {
-            active.classList.remove('active');
-        }
-        li[0].classList.add('active');
     }, []);
 
     const handleChange = (e) => {
@@ -69,7 +61,7 @@ function App() {
                         <tr>
                             <td>
                                 <ul className="nav navigation__list">
-                                    {navItems.map(i => <NavItem key={i.route} item={i}/>)}
+                                    {navItems.map(i => <NavItem key={i.route} item={i} />)}
                                 </ul>
                             </td>
                         </tr>

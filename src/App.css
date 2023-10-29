@@ -160,7 +160,13 @@ select:focus {
   padding: 10px;
 }
 
-.navigation__list button:hover, .navigation__list button:focus, .active {
+.navigation__list .button:hover, .navigation__list .button:focus {
+  box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
+  margin-right: 5px;
+  padding: 10px;
+}
+
+.active  {
   box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
   margin-right: 5px;
   padding: 10px;
@@ -170,6 +176,13 @@ select:focus {
   display: flex;
   align-items: flex-end;
   justify-content: left;
+}
+
+.pagination-container::after {
+  display: flex;
+  align-items: flex-end;
+  justify-content: left;
+  clear: both;
 }
 
 .pagination-number, .pagination-button{
