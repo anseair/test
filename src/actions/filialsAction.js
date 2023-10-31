@@ -13,6 +13,8 @@ export const fetchFilials = () => {
         if(response.ok) {
             const data = await response.json();
             dispatch(putFilials(data));
+            localStorage.setItem('filials', JSON.stringify(data));
+
         } else {
             throw new Error(response.status.toString());
         }

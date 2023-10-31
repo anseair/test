@@ -12,7 +12,7 @@ import button from "bootstrap/js/src/button";
 
 const Menu = () => {
     const dispatch = useDispatch();
-    const {data} = useSelector(state => state.menu);
+    const data = useSelector(state => state.menu);
 
     const filter = (name, num) => {
         const input = document.getElementById(name);
@@ -73,15 +73,14 @@ const Menu = () => {
         const menu2 = JSON.parse(localStorage.getItem('menu'));
         if (menu2) {
             console.log(menu2);
-
             let pageCount = countPage(menu2);
-        const paginationNumbers = document.getElementById("pagination-numbers");
-        for (let i = 1; i <= pageCount; i++) {
-            const pageNumber = document.createElement("button");
-            pageNumber.className = "pagination-number";
-            pageNumber.innerHTML = i;
-            pageNumber.setAttribute("page-index", i);
-            paginationNumbers.appendChild(pageNumber);
+            const paginationNumbers = document.getElementById("pagination-numbers");
+            for (let i = 1; i <= pageCount; i++) {
+                const pageNumber = document.createElement("button");
+                pageNumber.className = "pagination-number";
+                pageNumber.innerHTML = i;
+                pageNumber.setAttribute("page-index", i);
+                paginationNumbers.appendChild(pageNumber);
         };
         setPage(1);
 

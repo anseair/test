@@ -4,36 +4,47 @@ import NavItem from "./NavItem";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchFilials} from "../actions/filialsAction";
 import {fetchMaxPages, fetchMenu} from "../actions/menuAction";
+import maxPages from "../slices/maxPagesSlice";
 
 const SideBar = () => {
-    const [maxPages, setMaxPages] = useState();
-    // const [filial, setFilial] = useState();
     const {filials} = useSelector(state => state.filials);
     const dispatch = useDispatch();
-    // const [menu, setMenu] = useState();
+    // const {maxPages} = useSelector(state => state.maxPages);
+    const [allFilials, setAllFilials] = useState();
+    const [pages, setPages] = useState();
+    const [filialName, setFilialName] = useState();
+    const [menu, setMenu] = useState();
     // const {data} = useSelector(state => state.menu);
 
     useEffect(() => {
-        dispatch(fetchFilials())
+        // dispatch(fetchFilials());
         const maxPages2 = localStorage.getItem('max_pages');
         const filial2 = JSON.parse(localStorage.getItem('filial'));
-        // const menu2 = JSON.parse(localStorage.getItem('menu'));
-        if (maxPages2) {
-            setMaxPages(maxPages2);
-            dispatch(fetchMenu(filial2.id, maxPages2));
-        } else {
+        const menu2 = JSON.parse(localStorage.getItem('menu'));
+
+            if (maxPages2 && filial2 && menu2){
+                setPages(maxPages2);
+                setFilialName(filial2.name);
+                setMenu(menu2);
+            } else{
+                const filial22 = filials.map(item => item).filter(item => item.name === filialName);
+                localStorage.setItem('filial', JSON.stringify(filial22));
+                dispatch(fetchMaxPages(filial22.id));
+                dispatch(fetchMenu(filial22.id, pages));
+            }
+
             console.log("============")
-            dispatch(fetchMaxPages(filial2.id))
-        }
+            dispatch(fetchFilials())
+
     }, []);
 
     const handleChange = (e) => {
         const name = e.target.value;
         const filial = filials.find(f => f.name === name);
         localStorage.setItem('filial', JSON.stringify(filial));
-        // setFilial(filial);
+        setFilialName(filial.name);
         dispatch(fetchMaxPages(filial.id));
-        dispatch(fetchMenu(filial.id,maxPages));
+        dispatch(fetchMenu(filial.id,pages));
     }
 
     return (
@@ -54,8 +65,8 @@ const SideBar = () => {
                     {/*{filial &&*/}
                     <td>
                         <p>Филиалы</p>
-                        <select onChange={handleChange}>
-                            <option value='' disabled hidden>Выберите филиал</option>
+                        <select onChange={handleChange} value={filialName}>
+                            <option value=''>Выберите филиал</option>
                             {filials.map(f => {
                                 return <option key={f.id} value={f.name} >{f.name}</option>
                             })}
