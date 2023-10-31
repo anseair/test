@@ -3,14 +3,14 @@ import {createSlice} from "@reduxjs/toolkit";
  const menuSlice = createSlice({
     name: 'menu',
     initialState: {
-        menu: []
+        data: []
     },
     reducers: {
         putMenu (state, action) {
-            state.menu = action.payload
+            state.data = action.payload
         }
     }
 })
 
-export const {putMenu} = menuSlice.actions;
+export const { putMenu} = menuSlice.actions;
  export default menuSlice.reducer;

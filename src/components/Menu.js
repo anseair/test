@@ -4,16 +4,15 @@ import iconEdit from "../Icons/iconEdit.png"
 import iconDelete from "../Icons/iconDelete.png"
 import {current} from "@reduxjs/toolkit";
 import {useDispatch, useSelector} from "react-redux";
-import {fetchMenu, menuAction} from "../actions/menuAction";
+import {fetchMaxPages, fetchMenu, menuAction} from "../actions/menuAction";
 import {fetchFilials, filialsAction} from "../actions/filialsAction";
 import {logDOM} from "@testing-library/react";
 import {limit} from "../utils/constants";
 import button from "bootstrap/js/src/button";
 
-const Menu = ({menu}) => {
-    const {filials} = useSelector(state => state.filials);
-    const [filial, setFilial] = useState();
+const Menu = () => {
     const dispatch = useDispatch();
+    const {data} = useSelector(state => state.menu);
 
     const filter = (name, num) => {
         const input = document.getElementById(name);
@@ -68,7 +67,14 @@ const Menu = ({menu}) => {
 
     let currentPage= 1;
     useEffect(() => {
-        let pageCount = menu.max_pages;
+        // console.log(data)
+        const maxPages2 = localStorage.getItem('max_pages');
+        const filial2 = JSON.parse(localStorage.getItem('filial'));
+        const menu2 = JSON.parse(localStorage.getItem('menu'));
+        if (menu2) {
+            console.log(menu2);
+
+            let pageCount = countPage(menu2);
         const paginationNumbers = document.getElementById("pagination-numbers");
         for (let i = 1; i <= pageCount; i++) {
             const pageNumber = document.createElement("button");
@@ -92,26 +98,21 @@ const Menu = ({menu}) => {
             const pageIndex = Number(button.getAttribute("page-index"));
             if (pageIndex) {
                 button.addEventListener("click", () => {
-                    // setPage(pageIndex);
-                    const filial = JSON.parse(localStorage.getItem('filial'));
-                    dispatch(fetchMenu(filial.id, pageIndex));
+                    setPage(pageIndex);
                 });
             }
         });
-    }, [menu.data]);
+            } else {
+            dispatch(fetchMenu(filial2.id, maxPages2));
+        }
+    }, []);
 
-    const setPage = (pageNum) => {
-        currentPage = pageNum;
-        let pageCount = menu.max_pages;
-        let paginationLimit  = limit;
+    const countPage = (data) => {
         const table = document.getElementById("table");
         const tbody = table.querySelector("tbody");
         if (tbody) {
-            tbody.innerHTML = '';
-
-            if (menu.data) {
-
-                menu.data.forEach(item => {
+            if (data) {
+                data.forEach(item => {
                     const tr = document.createElement("tr");
                     const name = document.createElement('td');
                     const filial = document.createElement('td');
@@ -158,7 +159,25 @@ const Menu = ({menu}) => {
                 });
             }
         }
+        const trs = tbody.querySelectorAll("tr");
+        const array = [];
+        for (let tr of trs) {
+            let th_td = tr.getElementsByTagName('td');
+            if (th_td.length == 0) {
+                th_td = tr.getElementsByTagName('th');
+            }
+            let th_td_array = Array.from(th_td); // convert HTMLCollection to an Array
+            th_td_array = th_td_array.map(tag => tag.innerText); // get the text of each element
+            array.push(th_td_array);
+        }
 
+        let paginationLimit = limit;
+        let pageCount = Math.ceil(array.length / paginationLimit );
+        return pageCount;
+    }
+
+    const setPage = (pageNum) => {
+        currentPage = pageNum;
         document.querySelectorAll(".pagination-number").forEach((button) => {
             button.classList.remove("active");
             const pageIndex = Number(button.getAttribute("page-index"));
@@ -169,6 +188,10 @@ const Menu = ({menu}) => {
 
         const nextButton = document.getElementById("next-button");
         const prevButton = document.getElementById("prev-button");
+
+        let pageCount = countPage();
+        let paginationLimit  = limit;
+
         if (currentPage === 1) {
             disableButton(prevButton);
         } else {
@@ -182,7 +205,8 @@ const Menu = ({menu}) => {
 
         let start = (pageNum - 1) * paginationLimit;
         let end = pageNum * paginationLimit;
-
+        const table = document.getElementById("table");
+        const tbody = table.querySelector("tbody");
         const rows = tbody.querySelectorAll("tr");
         rows.forEach((row, index) => {
             if (index < start || index >= end) {
