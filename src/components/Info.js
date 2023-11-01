@@ -8,7 +8,7 @@ const Info = () => {
     return (
         <div>
             <Routes>
-                <Route path={'/'} element={<Menu/>}/>
+                <Route path={'/'} element={<Menu />}/>
                 <Route path={navItems[3].route} element={<Menu/>}/>
                 {/*<Route path={navItems[0].route} element={<Components/>}/>*/}
                 {/*<Route path={navItems[1].route} element={<SemiFinished/>}/>*/}

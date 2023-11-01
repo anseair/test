@@ -105,37 +105,37 @@ const Menu = () => {
         }
     }, []);
 
-    const func = (menu) => {
-
-        let pageCount = countPage(menu);
-        const paginationNumbers = document.getElementById("pagination-numbers");
-        for (let i = 1; i <= pageCount; i++) {
-            const pageNumber = document.createElement("button");
-            pageNumber.className = "pagination-number";
-            pageNumber.innerHTML = i;
-            pageNumber.setAttribute("page-index", i);
-            paginationNumbers.appendChild(pageNumber);
-        };
-        setPage(1);
-
-        const nextButton = document.getElementById("next-button");
-        const prevButton = document.getElementById("prev-button");
-        prevButton.addEventListener("click", () => {
-            setPage(currentPage - 1);
-        });
-        nextButton.addEventListener("click", () => {
-            setPage(currentPage + 1);
-        });
-
-        document.querySelectorAll(".pagination-number").forEach((button) => {
-            const pageIndex = Number(button.getAttribute("page-index"));
-            if (pageIndex) {
-                button.addEventListener("click", () => {
-                    setPage(pageIndex);
-                });
-            }
-        });
-    }
+    // const func = (menu) => {
+    //
+    //     let pageCount = countPage(menu);
+    //     const paginationNumbers = document.getElementById("pagination-numbers");
+    //     for (let i = 1; i <= pageCount; i++) {
+    //         const pageNumber = document.createElement("button");
+    //         pageNumber.className = "pagination-number";
+    //         pageNumber.innerHTML = i;
+    //         pageNumber.setAttribute("page-index", i);
+    //         paginationNumbers.appendChild(pageNumber);
+    //     };
+    //     setPage(1);
+    //
+    //     const nextButton = document.getElementById("next-button");
+    //     const prevButton = document.getElementById("prev-button");
+    //     prevButton.addEventListener("click", () => {
+    //         setPage(currentPage - 1);
+    //     });
+    //     nextButton.addEventListener("click", () => {
+    //         setPage(currentPage + 1);
+    //     });
+    //
+    //     document.querySelectorAll(".pagination-number").forEach((button) => {
+    //         const pageIndex = Number(button.getAttribute("page-index"));
+    //         if (pageIndex) {
+    //             button.addEventListener("click", () => {
+    //                 setPage(pageIndex);
+    //             });
+    //         }
+    //     });
+    // }
 
     const countPage = (data) => {
         const table = document.getElementById("table");
