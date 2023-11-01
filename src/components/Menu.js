@@ -9,10 +9,11 @@ import {fetchFilials, filialsAction} from "../actions/filialsAction";
 import {logDOM} from "@testing-library/react";
 import {limit} from "../utils/constants";
 import button from "bootstrap/js/src/button";
+import Table from "./Table";
 
 const Menu = () => {
     const dispatch = useDispatch();
-    const data = useSelector(state => state.menu);
+    const {data} = useSelector(state => state.menu);
 
     const filter = (name, num) => {
         const input = document.getElementById(name);
@@ -64,15 +65,13 @@ const Menu = () => {
             }
         }
     }
-
     let currentPage= 1;
     useEffect(() => {
         // console.log(data)
-        const maxPages2 = localStorage.getItem('max_pages');
-        const filial2 = JSON.parse(localStorage.getItem('filial'));
+        // const maxPages2 = localStorage.getItem('max_pages');
+        // const filial2 = JSON.parse(localStorage.getItem('filial'));
         const menu2 = JSON.parse(localStorage.getItem('menu'));
         if (menu2) {
-            console.log(menu2);
             let pageCount = countPage(menu2);
             const paginationNumbers = document.getElementById("pagination-numbers");
             for (let i = 1; i <= pageCount; i++) {
@@ -81,6 +80,41 @@ const Menu = () => {
                 pageNumber.innerHTML = i;
                 pageNumber.setAttribute("page-index", i);
                 paginationNumbers.appendChild(pageNumber);
+            };
+            setPage(1);
+
+            const nextButton = document.getElementById("next-button");
+            const prevButton = document.getElementById("prev-button");
+            prevButton.addEventListener("click", () => {
+                setPage(currentPage - 1);
+            });
+            nextButton.addEventListener("click", () => {
+                setPage(currentPage + 1);
+            });
+
+            document.querySelectorAll(".pagination-number").forEach((button) => {
+                const pageIndex = Number(button.getAttribute("page-index"));
+                if (pageIndex) {
+                    button.addEventListener("click", () => {
+                        setPage(pageIndex);
+                    });
+                }
+            });
+            // } else {
+            //     dispatch(fetchMenu(filial2.id, maxPages2));
+        }
+    }, []);
+
+    const func = (menu) => {
+
+        let pageCount = countPage(menu);
+        const paginationNumbers = document.getElementById("pagination-numbers");
+        for (let i = 1; i <= pageCount; i++) {
+            const pageNumber = document.createElement("button");
+            pageNumber.className = "pagination-number";
+            pageNumber.innerHTML = i;
+            pageNumber.setAttribute("page-index", i);
+            paginationNumbers.appendChild(pageNumber);
         };
         setPage(1);
 
@@ -101,10 +135,7 @@ const Menu = () => {
                 });
             }
         });
-            } else {
-            dispatch(fetchMenu(filial2.id, maxPages2));
-        }
-    }, []);
+    }
 
     const countPage = (data) => {
         const table = document.getElementById("table");
@@ -169,7 +200,6 @@ const Menu = () => {
             th_td_array = th_td_array.map(tag => tag.innerText); // get the text of each element
             array.push(th_td_array);
         }
-
         let paginationLimit = limit;
         let pageCount = Math.ceil(array.length / paginationLimit );
         return pageCount;
@@ -228,9 +258,9 @@ const Menu = () => {
 
     return (
         <>
-        <div className="content">
-            <table id="table" data-pagecount="3">
-                <thead>
+            <div className="content">
+                <table id="table" data-pagecount="3">
+                    <thead>
                     <tr className="first-row">
                         <th><input id="menu" type="text" placeholder="Название меню"  onKeyUp={filterMenu}/></th>
                         <th><input id="filial" type="text" placeholder="Филиал" onKeyUp={filterFilial}/></th>
@@ -243,15 +273,19 @@ const Menu = () => {
                         </th>
                         <th><input id="export" type="text" placeholder="Экспорт" onKeyUp={filterExport}/></th>
                     </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-        <div className="pagination-container">
-            <button className="pagination-button" id="prev-button">&lt;</button>
-            <div id="pagination-numbers"></div>
-            <button className="pagination-button" id="next-button">&gt;</button>
-        </div>
+                    </thead>
+                    { data &&
+                        <tbody>
+                            {data.map(i => <Table key={i.id} data={i}/>)}
+                        </tbody>
+                    }
+                </table>
+            </div>
+            <div className="pagination-container">
+                <button className="pagination-button" id="prev-button">&lt;</button>
+                <div id="pagination-numbers"></div>
+                <button className="pagination-button" id="next-button">&gt;</button>
+            </div>
         </>
     );
 };
