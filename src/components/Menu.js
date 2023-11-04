@@ -9,7 +9,6 @@ import {fetchFilials, filialsAction} from "../actions/filialsAction";
 import {logDOM} from "@testing-library/react";
 import {limit} from "../utils/constants";
 import button from "bootstrap/js/src/button";
-import Table from "./Table";
 
 const Menu = () => {
     const dispatch = useDispatch();
@@ -65,11 +64,9 @@ const Menu = () => {
             }
         }
     }
+
     let currentPage= 1;
     useEffect(() => {
-        // console.log(data)
-        // const maxPages2 = localStorage.getItem('max_pages');
-        // const filial2 = JSON.parse(localStorage.getItem('filial'));
         const menu2 = JSON.parse(localStorage.getItem('menu'));
         if (menu2) {
             let pageCount = countPage(menu2);
@@ -100,8 +97,6 @@ const Menu = () => {
                     });
                 }
             });
-            // } else {
-            //     dispatch(fetchMenu(filial2.id, maxPages2));
         }
     }, []);
 
@@ -274,11 +269,20 @@ const Menu = () => {
                         <th><input id="export" type="text" placeholder="Экспорт" onKeyUp={filterExport}/></th>
                     </tr>
                     </thead>
-                    { data &&
-                        <tbody>
-                            {data.map(i => <Table key={i.id} data={i}/>)}
+                        <tbody id="data">
+                        {/*{data.map(data => (*/}
+                        {/*    <tr>*/}
+                        {/*        <td>{data.name}</td>*/}
+                        {/*        <td>{data.filial.name}</td>*/}
+                        {/*        <td>{data.tt.name}</td>*/}
+                        {/*        <td>{data.active === true ? 'активно' : 'неактивно'}</td>*/}
+                        {/*        <td>{data.export.map(e => e)}</td>*/}
+                        {/*        <td className="my_icon"><img width='20' height='20' src={iconStat}/></td>*/}
+                        {/*        <td className="my_icon"><img width='20' height='20' src={iconEdit}/></td>*/}
+                        {/*        <td className="my_icon"><img width='20' height='20' src={iconDelete}/></td>*/}
+                        {/*    </tr>*/}
+                        {/*))}*/}
                         </tbody>
-                    }
                 </table>
             </div>
             <div className="pagination-container">
