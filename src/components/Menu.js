@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {fetchMaxPages, fetchMenu, menuAction} from "../actions/menuAction";
 import {fetchFilials, filialsAction} from "../actions/filialsAction";
 import {logDOM} from "@testing-library/react";
-import {limit} from "../utils/constants";
+import {limitOnPage} from "../utils/constants";
 import button from "bootstrap/js/src/button";
 
 const Menu = () => {
@@ -17,19 +17,90 @@ const Menu = () => {
     const filter = (name, num) => {
         const input = document.getElementById(name);
         const filter = input.value.toUpperCase();
-        const table = document.getElementById("table");
-        const tr = table.getElementsByTagName("tr");
-        for (let i = 0; i < tr.length; i++) {
-            const td = tr[i].getElementsByTagName("td")[num];
-            if (td) {
-                const txtValue = td.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
+        const tbody = document.getElementById("data");
+        const rows = tbody.querySelectorAll("tr");
+        const pageNum = 1;
+        let start = (pageNum - 1) * limitOnPage;
+        let end = pageNum * limitOnPage;
+        let filterRows = [];
+
+        if (filter){
+            for (let i = 0; i < rows.length; i++) {
+                const td = rows[i].getElementsByTagName("td")[num];
+                if (td) {
+                    const txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        rows[i].style.display = "";
+                        filterRows.push(rows[i]);
+                        filterRows.forEach((row, index) => {
+                            if (index < start || index >= end) {
+                                row.style.display = "none";
+                            } else {
+                                row.style.display = "";
+                            }
+                        });
+
+                        const array = [];
+                        for (let i = 0; i < filterRows.length; i++) {
+                            let th_td = filterRows[i].getElementsByTagName('td');
+                            if (th_td.length == 0) {
+                                th_td = filterRows[i].getElementsByTagName('th');
+                            }
+                            let th_td_array = Array.from(th_td);
+                            th_td_array = th_td_array.map(tag => tag.innerText);
+                            array.push(th_td_array);
+                        }
+
+                        let pageCount = Math.ceil(filterRows.length / limitOnPage );
+                        const paginationNumbers = document.getElementById("pagination-numbers");
+                        paginationNumbers.innerHTML='';
+                        for (let i = 1; i <= pageCount; i++) {
+                            const pageNumber = document.createElement("button");
+                            pageNumber.className = "pagination-number";
+                            pageNumber.innerHTML = i;
+                            pageNumber.setAttribute("page-index", i);
+                            paginationNumbers.appendChild(pageNumber);
+                        };
+                        setPage(1);
+                        const nextButton = document.getElementById("next-button");
+                        const prevButton = document.getElementById("prev-button");
+                        prevButton.addEventListener("click", () => {
+                            setPage(currentPage - 1);
+                        });
+                        nextButton.addEventListener("click", () => {
+                            setPage(currentPage + 1);
+                        });
+
+                        document.querySelectorAll(".pagination-number").forEach((button) => {
+                            const pageIndex = Number(button.getAttribute("page-index"));
+                            if (pageIndex) {
+                                button.addEventListener("click", () => {
+                                    setPage(pageIndex);
+                                });
+                            }
+                        });
+
+                    } else {
+                        rows[i].style.display = "none";
+                    }
                 }
             }
+
+
+
         }
+        else {
+            rows.forEach((row, index) => {
+                if (index < start || index >= end) {
+                    row.style.display = "none";
+                } else {
+                    row.style.display = "";
+                }
+            });
+        }
+
+
+
     }
 
     const filterMenu = () => {
@@ -100,38 +171,6 @@ const Menu = () => {
         }
     }, []);
 
-    // const func = (menu) => {
-    //
-    //     let pageCount = countPage(menu);
-    //     const paginationNumbers = document.getElementById("pagination-numbers");
-    //     for (let i = 1; i <= pageCount; i++) {
-    //         const pageNumber = document.createElement("button");
-    //         pageNumber.className = "pagination-number";
-    //         pageNumber.innerHTML = i;
-    //         pageNumber.setAttribute("page-index", i);
-    //         paginationNumbers.appendChild(pageNumber);
-    //     };
-    //     setPage(1);
-    //
-    //     const nextButton = document.getElementById("next-button");
-    //     const prevButton = document.getElementById("prev-button");
-    //     prevButton.addEventListener("click", () => {
-    //         setPage(currentPage - 1);
-    //     });
-    //     nextButton.addEventListener("click", () => {
-    //         setPage(currentPage + 1);
-    //     });
-    //
-    //     document.querySelectorAll(".pagination-number").forEach((button) => {
-    //         const pageIndex = Number(button.getAttribute("page-index"));
-    //         if (pageIndex) {
-    //             button.addEventListener("click", () => {
-    //                 setPage(pageIndex);
-    //             });
-    //         }
-    //     });
-    // }
-
     const countPage = (data) => {
         const table = document.getElementById("table");
         const tbody = table.querySelector("tbody");
@@ -195,8 +234,7 @@ const Menu = () => {
             th_td_array = th_td_array.map(tag => tag.innerText); // get the text of each element
             array.push(th_td_array);
         }
-        let paginationLimit = limit;
-        let pageCount = Math.ceil(array.length / paginationLimit );
+        let pageCount = Math.ceil(array.length / limitOnPage );
         return pageCount;
     }
 
@@ -214,7 +252,6 @@ const Menu = () => {
         const prevButton = document.getElementById("prev-button");
 
         let pageCount = countPage();
-        let paginationLimit  = limit;
 
         if (currentPage === 1) {
             disableButton(prevButton);
@@ -227,8 +264,8 @@ const Menu = () => {
             enableButton(nextButton);
         }
 
-        let start = (pageNum - 1) * paginationLimit;
-        let end = pageNum * paginationLimit;
+        let start = (pageNum - 1) * limitOnPage;
+        let end = pageNum * limitOnPage;
         const table = document.getElementById("table");
         const tbody = table.querySelector("tbody");
         const rows = tbody.querySelectorAll("tr");

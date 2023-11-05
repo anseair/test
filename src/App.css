@@ -42,10 +42,9 @@ li{
   font-weight: 300;
 }
 
-.home {
-  width: 500px;
-  margin-bottom: 100px;
-}
+/*.home {*/
+/*  margin-bottom: 100px;*/
+/*}*/
 
 .home ul {
   margin: 5px 0 ;

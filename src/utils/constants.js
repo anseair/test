@@ -11,4 +11,4 @@ export const navItems = [
 ]
 
 export const baseUrl = 'https://testjob.checkport.ru';
-export const limit = 5;
+export const limitOnPage = 5;

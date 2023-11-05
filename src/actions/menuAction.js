@@ -1,4 +1,4 @@
-import {baseUrl} from "../utils/constants";
+import {baseUrl, limitOnPage} from "../utils/constants";
 import {putMenu} from "../slices/menuSlice";
 import {putMaxPages} from "../slices/maxPagesSlice";
 import iconStat from "../Icons/iconStat.png"
@@ -41,8 +41,11 @@ export const fetchMenu = (id, limit) => {
             const res = data.data;
             dispatch(putMenu(res));
             localStorage.setItem('menu', JSON.stringify(res));
+
+            const tbody = document.getElementById("data");
             let temp="";
             let active="";
+
             for(let i= 0; i < res.length; i++) {
                 if (res[i].active === true){
                     active = 'активно'
@@ -60,9 +63,18 @@ export const fetchMenu = (id, limit) => {
                 temp+="<td class='my_icon'>" +  `<img width='20' height='20' src=${iconDelete} />` + "</td>";
                 temp+="</tr>";
             }
-            const table = document.getElementById("table");
-            const tbody = table.querySelector("tbody");
-            tbody.innerHTML=temp;
+            tbody.innerHTML = temp;
+            const rows = tbody.querySelectorAll("tr");
+            const pageNum = 1;
+            let start = (pageNum - 1) * limitOnPage;
+            let end = pageNum * limitOnPage;
+            rows.forEach((row, index) => {
+                if (index < start || index >= end) {
+                    row.style.display = "none";
+                } else {
+                    row.style.display = "";
+                }
+            });
         } else {
             throw new Error(response.status.toString())
         }
