@@ -9,135 +9,37 @@ import {fetchFilials, filialsAction} from "../actions/filialsAction";
 import {logDOM} from "@testing-library/react";
 import {limitOnPage} from "../utils/constants";
 import button from "bootstrap/js/src/button";
+import {fetchFilterActive, fetchFilterFilial, fetchFilterName, fetchFilterTT} from "../actions/filtersAction";
 
 const Menu = () => {
     const dispatch = useDispatch();
     const {data} = useSelector(state => state.menu);
-
-    const filter = (name, num) => {
-        const input = document.getElementById(name);
-        const filter = input.value.toUpperCase();
-        const tbody = document.getElementById("data");
-        const rows = tbody.querySelectorAll("tr");
-        const pageNum = 1;
-        let start = (pageNum - 1) * limitOnPage;
-        let end = pageNum * limitOnPage;
-        let filterRows = [];
-
-        if (filter){
-            for (let i = 0; i < rows.length; i++) {
-                const td = rows[i].getElementsByTagName("td")[num];
-                if (td) {
-                    const txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        rows[i].style.display = "";
-                        filterRows.push(rows[i]);
-                        filterRows.forEach((row, index) => {
-                            if (index < start || index >= end) {
-                                row.style.display = "none";
-                            } else {
-                                row.style.display = "";
-                            }
-                        });
-
-                        const array = [];
-                        for (let i = 0; i < filterRows.length; i++) {
-                            let th_td = filterRows[i].getElementsByTagName('td');
-                            if (th_td.length == 0) {
-                                th_td = filterRows[i].getElementsByTagName('th');
-                            }
-                            let th_td_array = Array.from(th_td);
-                            th_td_array = th_td_array.map(tag => tag.innerText);
-                            array.push(th_td_array);
-                        }
-
-                        let pageCount = Math.ceil(filterRows.length / limitOnPage );
-                        const paginationNumbers = document.getElementById("pagination-numbers");
-                        paginationNumbers.innerHTML='';
-                        for (let i = 1; i <= pageCount; i++) {
-                            const pageNumber = document.createElement("button");
-                            pageNumber.className = "pagination-number";
-                            pageNumber.innerHTML = i;
-                            pageNumber.setAttribute("page-index", i);
-                            paginationNumbers.appendChild(pageNumber);
-                        };
-                        setPage(1);
-                        const nextButton = document.getElementById("next-button");
-                        const prevButton = document.getElementById("prev-button");
-                        prevButton.addEventListener("click", () => {
-                            setPage(currentPage - 1);
-                        });
-                        nextButton.addEventListener("click", () => {
-                            setPage(currentPage + 1);
-                        });
-
-                        document.querySelectorAll(".pagination-number").forEach((button) => {
-                            const pageIndex = Number(button.getAttribute("page-index"));
-                            if (pageIndex) {
-                                button.addEventListener("click", () => {
-                                    setPage(pageIndex);
-                                });
-                            }
-                        });
-
-                    } else {
-                        rows[i].style.display = "none";
-                    }
-                }
-            }
-
-
-
-        }
-        else {
-            rows.forEach((row, index) => {
-                if (index < start || index >= end) {
-                    row.style.display = "none";
-                } else {
-                    row.style.display = "";
-                }
-            });
-        }
-
-
-
-    }
-
-    const filterMenu = () => {
-        filter("menu", 0);
-    }
-
-    const filterFilial = () => {
-        filter("filial", 1)
-    }
-
-    const filterPoint = () => {
-        filter("point", 2)
-    }
-
-    const filterExport = () => {
-        filter("export", 4)
-    }
-
-    const filterActive = () => {
-        const select = document.getElementById("active");
-        const table = document.getElementById("table");
-        const tr = table.getElementsByTagName("tr");
-        const selected = [...select.selectedOptions].map(option => option.value);
-        for (let i = 1; i < tr.length; i++) {
-            tr[i].style.display = 'none';
-            const td = tr[i].getElementsByTagName('td');
-            for (let j = 0; j < td.length; j++) {
-                const cellValue = td[j];
-                if (cellValue && cellValue.innerHTML.toLowerCase().indexOf(selected[0]) > -1) {
-                    tr[i].style.display = '';
-                }
-            }
-        }
-    }
+    const [pages, setPages] = useState();
+    const [filialName, setFilialName] = useState();
+    const [filial, setFilial] = useState();
 
     let currentPage= 1;
     useEffect(() => {
+        const filials2 = JSON.parse(localStorage.getItem('filials'));
+        const maxPages2 = JSON.parse(localStorage.getItem('max_pages'));
+        const filial2 = JSON.parse(localStorage.getItem('filial'));
+        if (filials2) {
+            if (maxPages2) {
+                setPages(maxPages2);
+                if (filial2) {
+                    setFilialName(filial2.name);
+                    let res;
+                    for (let i = 0; i < maxPages2.length; i++) {
+                        if (maxPages2[i].filial.id === filial2.id && maxPages2[i].filial.name === filial2.name){
+                            res = maxPages2[i];
+                        }
+                    }
+                    setFilial(res);
+                }
+            } else{
+                dispatch(fetchMaxPages(filials2));
+            }
+
         const menu2 = JSON.parse(localStorage.getItem('menu'));
         if (menu2) {
             let pageCount = countPage(menu2);
@@ -148,7 +50,8 @@ const Menu = () => {
                 pageNumber.innerHTML = i;
                 pageNumber.setAttribute("page-index", i);
                 paginationNumbers.appendChild(pageNumber);
-            };
+            }
+            ;
             setPage(1);
 
             const nextButton = document.getElementById("next-button");
@@ -168,6 +71,9 @@ const Menu = () => {
                     });
                 }
             });
+        }
+        } else {
+            dispatch(fetchFilials());
         }
     }, []);
 
@@ -288,6 +194,36 @@ const Menu = () => {
         button.removeAttribute("disabled");
     };
 
+    const filterMenu = () => {
+        const input = document.getElementById("menu");
+        const name = input.value.toUpperCase();
+        dispatch(fetchFilterName(filial.filial.id, filial.max_pages, name));
+    }
+
+    const filterFilial = () => {
+        const input = document.getElementById("filial");
+        const filialName = input.value.toUpperCase();
+        dispatch(fetchFilterFilial(filial.filial.id, filial.max_pages, filialName));
+    }
+
+    const filterTT = () => {
+        const input = document.getElementById("tt");
+        const tt = input.value.toUpperCase();
+        dispatch(fetchFilterTT(filial.filial.id, filial.max_pages, tt));
+    }
+
+    const filterActive = () => {
+        let active = '';
+        const select = document.getElementById("active");
+        if (select.value === 'Активно') {
+            active = 'active';
+        }
+        if (select.value === 'Неактивно') {
+            active = 'no_active';
+        }
+        dispatch(fetchFilterActive(filial.filial.id, filial.max_pages, active));
+    }
+
     return (
         <>
             <div className="content">
@@ -296,30 +232,18 @@ const Menu = () => {
                     <tr className="first-row">
                         <th><input id="menu" type="text" placeholder="Название меню"  onKeyUp={filterMenu}/></th>
                         <th><input id="filial" type="text" placeholder="Филиал" onKeyUp={filterFilial}/></th>
-                        <th><input id="point" type="text" placeholder="Торговая точка" onKeyUp={filterPoint}/></th>
+                        <th><input id="tt" type="text" placeholder="Торговая точка" onKeyUp={filterTT}/></th>
                         <th>
                             <select id="active" onChange={filterActive}>
-                                <option>активно</option>
-                                <option>неактивно</option>
+                                <option value=''>Выберите</option>
+                                <option>Активно</option>
+                                <option>Неактивно</option>
                             </select>
                         </th>
-                        <th><input id="export" type="text" placeholder="Экспорт" onKeyUp={filterExport}/></th>
+                        <th><input id="export" type="text" placeholder="Экспорт"/></th>
                     </tr>
                     </thead>
-                        <tbody id="data">
-                        {/*{data.map(data => (*/}
-                        {/*    <tr>*/}
-                        {/*        <td>{data.name}</td>*/}
-                        {/*        <td>{data.filial.name}</td>*/}
-                        {/*        <td>{data.tt.name}</td>*/}
-                        {/*        <td>{data.active === true ? 'активно' : 'неактивно'}</td>*/}
-                        {/*        <td>{data.export.map(e => e)}</td>*/}
-                        {/*        <td className="my_icon"><img width='20' height='20' src={iconStat}/></td>*/}
-                        {/*        <td className="my_icon"><img width='20' height='20' src={iconEdit}/></td>*/}
-                        {/*        <td className="my_icon"><img width='20' height='20' src={iconDelete}/></td>*/}
-                        {/*    </tr>*/}
-                        {/*))}*/}
-                        </tbody>
+                        <tbody id="data"></tbody>
                 </table>
             </div>
             <div className="pagination-container">

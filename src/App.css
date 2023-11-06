@@ -42,10 +42,6 @@ li{
   font-weight: 300;
 }
 
-/*.home {*/
-/*  margin-bottom: 100px;*/
-/*}*/
-
 .home ul {
   margin: 5px 0 ;
 }
@@ -60,7 +56,6 @@ table {
 }
 
 td {
-  width: 150px;
   padding: 20px 10px 10px 10px;
   color: rgba(2, 21, 98, 0.8);
   font-weight: 600;

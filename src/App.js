@@ -19,7 +19,7 @@ function App() {
         <section className="m-5 p-5">
             <div className="row flex-nowrap">
                 <div className="col-2 px-2 m-3">
-                    <SideBar currentPage={setCurrentPage}/>
+                    <SideBar currentPage={setCurrentPage} />
                 </div>
                 <div className="col-9 py-3 m-3">
                     <Info currentPage={currentPage}/>
