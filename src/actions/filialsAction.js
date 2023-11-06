@@ -2,7 +2,7 @@ import {baseUrl} from "../utils/constants";
 import {putFilials} from "../slices/filialsSlices";
 import {putMaxPages} from "../slices/maxPagesSlice";
 
-
+// request API get all filials
 export const fetchFilials = () => {
     return async (dispatch) => {
         const response = await (fetch(`${baseUrl}/filial/`, {

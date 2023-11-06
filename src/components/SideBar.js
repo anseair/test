@@ -2,53 +2,56 @@ import React, {useEffect, useState} from 'react';
 import {limitOnPage, navItems} from "../utils/constants";
 import NavItem from "./NavItem";
 import {useDispatch, useSelector} from "react-redux";
-// import {fetchFilials} from "../actions/filialsAction";
 import {fetchMaxPages, fetchMenu} from "../actions/menuAction";
 import {fetchFilials} from "../actions/filialsAction";
 
+//left panel in the application with selection filial and navigation in the app
 const SideBar = () => {
     const {filials} = useSelector(state => state.filials);
     const dispatch = useDispatch();
-    const [pages, setPages] = useState();
     const [filialName, setFilialName] = useState();
     const maxPages = useSelector(state => state.maxPages);
 
     let currentPage = 0;
 
     useEffect(() => {
+
+        //get data from localStorage
         const maxPages2 = JSON.parse(localStorage.getItem('max_pages'));
         const filial2 = JSON.parse(localStorage.getItem('filial'));
         const filials2 = JSON.parse(localStorage.getItem('filials'));
         if (filials2) {
-        if (maxPages2) {
-            setPages(maxPages2);
-            if (filial2) {
-                setFilialName(filial2.name);
+            if (maxPages2) {
+                if (filial2) {
+                    setFilialName(filial2.name);
+                }
+            } else {
+                dispatch(fetchMaxPages(filials2));
             }
-        } else {
-            dispatch(fetchMaxPages(filials2));
-        }
         } else {
             dispatch(fetchFilials());
         }
     }, []);
 
+    // select filial and get menu by filial
     const handleChange = (e) => {
-        const name = e.target.value;
+        const name = e.target.value; //get name selected filial
         if (name) {
             const filial = filials.find(f => f.name === name);
             localStorage.setItem('filial', JSON.stringify(filial));
             setFilialName(filial.name);
             let filial2;
             for (let i = 0; i < maxPages.length; i++) {
-                if (maxPages[i].filial.id === filial.id && maxPages[i].filial.name === filial.name){
+                if (maxPages[i].filial.id === filial.id && maxPages[i].filial.name === filial.name){ // search for the required filial
                     filial2 = maxPages[i];
                 }
             }
             const id = filial2.filial.id;
-            dispatch(fetchMenu(id, filial2.max_pages));
+            dispatch(fetchMenu(id, filial2.max_pages)); //request  menu by id and limit paged
 
-            let pageCount = Math.ceil(filial2.max_pages/ limitOnPage );
+            let pageCount = Math.ceil(filial2.max_pages/ limitOnPage ); // calculating count of pages in table
+
+            // create navigation buttons
             const paginationNumbers = document.getElementById("pagination-numbers");
             paginationNumbers.innerHTML='';
             for (let i = 1; i <= pageCount; i++) {
@@ -58,7 +61,10 @@ const SideBar = () => {
                 pageNumber.setAttribute("page-index", i);
                 paginationNumbers.appendChild(pageNumber);
             }
-            setPage(1, filial2);
+
+            setPage(1, filial2); // set first page
+
+            // add onClick to next-button and to prev-button
             const nextButton = document.getElementById("next-button");
             const prevButton = document.getElementById("prev-button");
             prevButton.addEventListener("click", () => {
@@ -68,6 +74,7 @@ const SideBar = () => {
                 setPage(currentPage + 1, filial2);
             });
 
+            //add onClick to all buttons with numbers
             document.querySelectorAll(".pagination-number").forEach((button) => {
                 const pageIndex = Number(button.getAttribute("page-index"));
                 if (pageIndex) {
@@ -79,27 +86,23 @@ const SideBar = () => {
         }
     }
 
+
     const setPage = (pageNum, filial) => {
         currentPage = pageNum;
+        let pageCount = Math.ceil(filial.max_pages/ limitOnPage );
+
+        // set to button classList active when button pressed
         document.querySelectorAll(".pagination-number").forEach((button) => {
             button.classList.remove("active");
             const pageIndex = Number(button.getAttribute("page-index"));
-            if (pageIndex == currentPage) {
+            if (pageIndex === currentPage) {
                 button.classList.add("active");
             }
         });
 
+        //set disable and enable to button when navigation on number finished
         const nextButton = document.getElementById("next-button");
         const prevButton = document.getElementById("prev-button");
-
-        let filial2;
-        for (let i = 0; i < maxPages.length; i++) {
-            if (maxPages[i].filial.id === filial.filial.id && maxPages[i].filial.name === filial.filial.name){
-                filial2 = maxPages[i];
-            }
-        }
-        let pageCount = Math.ceil(filial2.max_pages/ limitOnPage );
-
         if (currentPage === 1) {
             disableButton(prevButton);
         } else {
@@ -111,6 +114,7 @@ const SideBar = () => {
             enableButton(nextButton);
         }
 
+        // hiding the remaining records in the table if records in one page more than limit
         let start = (pageNum - 1) * limitOnPage;
         let end = pageNum * limitOnPage;
         const tbody = document.getElementById("data");

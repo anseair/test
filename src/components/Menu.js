@@ -9,17 +9,25 @@ import {fetchFilials, filialsAction} from "../actions/filialsAction";
 import {logDOM} from "@testing-library/react";
 import {limitOnPage} from "../utils/constants";
 import button from "bootstrap/js/src/button";
-import {fetchFilterActive, fetchFilterFilial, fetchFilterName, fetchFilterTT} from "../actions/filtersAction";
+import {
+    fetchFilter,
+    fetchFilterActive,
+    fetchFilterFilial,
+    fetchFilterName,
+    fetchFilterTT
+} from "../actions/filtersAction";
 
+// section menu
 const Menu = () => {
     const dispatch = useDispatch();
-    const {data} = useSelector(state => state.menu);
     const [pages, setPages] = useState();
     const [filialName, setFilialName] = useState();
     const [filial, setFilial] = useState();
 
     let currentPage= 1;
     useEffect(() => {
+
+        // get data from localstorage
         const filials2 = JSON.parse(localStorage.getItem('filials'));
         const maxPages2 = JSON.parse(localStorage.getItem('max_pages'));
         const filial2 = JSON.parse(localStorage.getItem('filial'));
@@ -35,49 +43,55 @@ const Menu = () => {
                         }
                     }
                     setFilial(res);
-                }
-            } else{
+                    let pageCount = Math.ceil(res.max_pages/ limitOnPage ); // calculating count of pages in table
+
+                    const menu2 = JSON.parse(localStorage.getItem('menu'));
+                    if (menu2) {
+                        fillTable(menu2);
+
+                        // create navigation buttons
+                        const paginationNumbers = document.getElementById("pagination-numbers");
+                        for (let i = 1; i <= pageCount; i++) {
+                            const pageNumber = document.createElement("button");
+                            pageNumber.className = "pagination-number";
+                            pageNumber.innerHTML = i;
+                            pageNumber.setAttribute("page-index", i);
+                            paginationNumbers.appendChild(pageNumber);
+                        };
+
+                        setPage(1, res); //set first page
+
+                        // add onClick to next-button and to prev-button
+                        const nextButton = document.getElementById("next-button");
+                        const prevButton = document.getElementById("prev-button");
+                        prevButton.addEventListener("click", () => {
+                            setPage(currentPage - 1, res);
+                        });
+                        nextButton.addEventListener("click", () => {
+                            setPage(currentPage + 1, res);
+                        });
+
+                        //add onClick to all buttons with numbers
+                        document.querySelectorAll(".pagination-number").forEach((button) => {
+                            const pageIndex = Number(button.getAttribute("page-index"));
+                            if (pageIndex) {
+                                button.addEventListener("click", () => {
+                                    setPage(pageIndex, res);
+                                });
+                            }
+                        });
+                    }
+                } else{
                 dispatch(fetchMaxPages(filials2));
-            }
-
-        const menu2 = JSON.parse(localStorage.getItem('menu'));
-        if (menu2) {
-            let pageCount = countPage(menu2);
-            const paginationNumbers = document.getElementById("pagination-numbers");
-            for (let i = 1; i <= pageCount; i++) {
-                const pageNumber = document.createElement("button");
-                pageNumber.className = "pagination-number";
-                pageNumber.innerHTML = i;
-                pageNumber.setAttribute("page-index", i);
-                paginationNumbers.appendChild(pageNumber);
-            }
-            ;
-            setPage(1);
-
-            const nextButton = document.getElementById("next-button");
-            const prevButton = document.getElementById("prev-button");
-            prevButton.addEventListener("click", () => {
-                setPage(currentPage - 1);
-            });
-            nextButton.addEventListener("click", () => {
-                setPage(currentPage + 1);
-            });
-
-            document.querySelectorAll(".pagination-number").forEach((button) => {
-                const pageIndex = Number(button.getAttribute("page-index"));
-                if (pageIndex) {
-                    button.addEventListener("click", () => {
-                        setPage(pageIndex);
-                    });
                 }
-            });
-        }
+            }
         } else {
             dispatch(fetchFilials());
         }
     }, []);
 
-    const countPage = (data) => {
+    // fiiling table
+    const fillTable = (data) => {
         const table = document.getElementById("table");
         const tbody = table.querySelector("tbody");
         if (tbody) {
@@ -129,23 +143,13 @@ const Menu = () => {
                 });
             }
         }
-        const trs = tbody.querySelectorAll("tr");
-        const array = [];
-        for (let tr of trs) {
-            let th_td = tr.getElementsByTagName('td');
-            if (th_td.length == 0) {
-                th_td = tr.getElementsByTagName('th');
-            }
-            let th_td_array = Array.from(th_td); // convert HTMLCollection to an Array
-            th_td_array = th_td_array.map(tag => tag.innerText); // get the text of each element
-            array.push(th_td_array);
-        }
-        let pageCount = Math.ceil(array.length / limitOnPage );
-        return pageCount;
     }
 
-    const setPage = (pageNum) => {
+    const setPage = (pageNum, filial) => {
         currentPage = pageNum;
+        let pageCount = Math.ceil(filial.max_pages/ limitOnPage );
+
+        // set to button classList active when button pressed
         document.querySelectorAll(".pagination-number").forEach((button) => {
             button.classList.remove("active");
             const pageIndex = Number(button.getAttribute("page-index"));
@@ -154,11 +158,9 @@ const Menu = () => {
             }
         });
 
+        //set disable and enable to button when navigation on number finished
         const nextButton = document.getElementById("next-button");
         const prevButton = document.getElementById("prev-button");
-
-        let pageCount = countPage();
-
         if (currentPage === 1) {
             disableButton(prevButton);
         } else {
@@ -170,6 +172,7 @@ const Menu = () => {
             enableButton(nextButton);
         }
 
+        // hiding the remaining records in the table if records in one page more than limit
         let start = (pageNum - 1) * limitOnPage;
         let end = pageNum * limitOnPage;
         const table = document.getElementById("table");
@@ -184,6 +187,7 @@ const Menu = () => {
         });
     };
 
+
     const disableButton = (button) => {
         button.classList.add("disabled");
         button.setAttribute("disabled", true);
@@ -194,24 +198,28 @@ const Menu = () => {
         button.removeAttribute("disabled");
     };
 
+    // filtration menu by name
     const filterMenu = () => {
         const input = document.getElementById("menu");
         const name = input.value.toUpperCase();
-        dispatch(fetchFilterName(filial.filial.id, filial.max_pages, name));
+        dispatch(fetchFilter(filial.filial.id, filial.max_pages, "name", name))
     }
 
+    // filtration menu by filial name
     const filterFilial = () => {
         const input = document.getElementById("filial");
         const filialName = input.value.toUpperCase();
-        dispatch(fetchFilterFilial(filial.filial.id, filial.max_pages, filialName));
+        dispatch(fetchFilter(filial.filial.id, filial.max_pages, "filial", filialName))
     }
 
+    // filtration menu by poion of sale name
     const filterTT = () => {
         const input = document.getElementById("tt");
         const tt = input.value.toUpperCase();
-        dispatch(fetchFilterTT(filial.filial.id, filial.max_pages, tt));
+        dispatch(fetchFilter(filial.filial.id, filial.max_pages, "tt", tt))
     }
 
+    // filtration menu by filial activity
     const filterActive = () => {
         let active = '';
         const select = document.getElementById("active");
@@ -221,7 +229,7 @@ const Menu = () => {
         if (select.value === 'Неактивно') {
             active = 'no_active';
         }
-        dispatch(fetchFilterActive(filial.filial.id, filial.max_pages, active));
+        dispatch(fetchFilter(filial.filial.id, filial.max_pages, "active", active))
     }
 
     return (

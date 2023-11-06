@@ -5,6 +5,7 @@ import iconStat from "../Icons/iconStat.png"
 import iconEdit from "../Icons/iconEdit.png"
 import iconDelete from "../Icons/iconDelete.png"
 
+//request API - get maximum pages by filial id
  export const fetchMaxPages = (filials) => {
      return async (dispatch) => {
          const responses = await Promise.all(filials.map(f => fetch(`${baseUrl}/filial/${f.id}/menu/`, {
@@ -27,7 +28,7 @@ import iconDelete from "../Icons/iconDelete.png"
     }
 };
 
-
+//request API - get all menu by filial id and limit paged and filling table
 export const fetchMenu = (id, limit) => {
     return async (dispatch) => {
         const  response = await fetch(`${baseUrl}/filial/${id}/menu/?limit=${limit}`, {
@@ -42,10 +43,10 @@ export const fetchMenu = (id, limit) => {
             dispatch(putMenu(res));
             localStorage.setItem('menu', JSON.stringify(res));
 
+            // filling table
             const tbody = document.getElementById("data");
             let temp="";
             let active="";
-
             for(let i= 0; i < res.length; i++) {
                 if (res[i].active === true){
                     active = 'активно'
@@ -58,9 +59,9 @@ export const fetchMenu = (id, limit) => {
                 temp+="<td>"+res[i].tt.name+"</td>";
                 temp+="<td>"+active+"</td>";
                 temp+="<td>"+res[i].export.map(e => e)+"</td>";
-                temp+="<td class='my_icon'>"+`<img width='20' height='20' src=${iconStat} />`+"</td>";
+                temp+="<td class='my_icon'>" + `<img width='20' height='20' src=${iconStat} />`+"</td>";
                 temp+="<td class='my_icon'>" + `<img width='20' height='20' src=${iconEdit} />` + "</td>";
-                temp+="<td class='my_icon'>" +  `<img width='20' height='20' src=${iconDelete} />` + "</td>";
+                temp+="<td class='my_icon'>" + `<img width='20' height='20' src=${iconDelete} />` + "</td>";
                 temp+="</tr>";
             }
             tbody.innerHTML = temp;
@@ -68,6 +69,8 @@ export const fetchMenu = (id, limit) => {
             const pageNum = 1;
             let start = (pageNum - 1) * limitOnPage;
             let end = pageNum * limitOnPage;
+
+            // hiding the remaining records in the table if records in one page more than limit
             rows.forEach((row, index) => {
                 if (index < start || index >= end) {
                     row.style.display = "none";

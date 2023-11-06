@@ -12,6 +12,8 @@ function App() {
     const dispatch = useDispatch();
 
     useEffect(() => {
+
+        // load filials by API
         dispatch(fetchFilials())
     }, []);
 

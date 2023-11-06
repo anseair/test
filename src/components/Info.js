@@ -4,6 +4,7 @@ import {navItems} from "../utils/constants";
 import Menu from "./Menu";
 import ErrorPage from "./ErrorPage";
 
+// Navigation
 const Info = () => {
     return (
         <Routes>

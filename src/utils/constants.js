@@ -1,3 +1,4 @@
+//navigation
 export const navItems = [
     {title: "Компоненты", route: "components"},
     {title: "Полуфабрикаты", route: "semiFinished"},
@@ -11,4 +12,6 @@ export const navItems = [
 ]
 
 export const baseUrl = 'https://testjob.checkport.ru';
+
+// count records in one page in table
 export const limitOnPage = 5;
