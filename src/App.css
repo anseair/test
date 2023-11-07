@@ -6,13 +6,13 @@ h5,
 h6,
 ul,
 ol,
-li{
+li,
+p{
   margin: 0;
   padding: 0;
   list-style: none;
   color: rgba(2, 21, 98, 0.8);
   font-weight: 600;
-
 }
 
 .link {
@@ -25,6 +25,11 @@ li{
   content: "- ";
  }
 
+/*ul > li:hover, ul > li:active{*/
+/*  box-shadow: 0 4px 4px rgba(0, 0, 0, .2);*/
+/*  padding: 5px;*/
+/*}*/
+
 .hr {
   padding-top: 5px;
   border: 1px solid midnightblue;
@@ -35,19 +40,49 @@ li{
 }
 
 .name thead{
+  /*display: block;*/
   box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
 }
 
-.name p{
+.name tr {
+  /*position: fixed;*/
+}
+
+.name th {
+  /*display: inline-block;*/
+    /*margin: 0 20px;*/
+  /*display:block;*/
+  /*position:relative;*/
+  /*text-align:center;*/
+  /*top: 50%;*/
+}
+
+.name .img1{
+  float: left;
+  position: relative;
+}
+.name .sklad {
+  position: absolute;
+  padding-top: 14px;
+}
+
+.name .firma {
+  position: absolute;
+  padding-top: 5px;
+}
+
+.name tbody {
+  /*display: block;*/
+  overflow-y: auto;
+}
+
+.name p {
   font-weight: 300;
+  padding: 5px 5px 5px 0;
 }
-
-.home ul {
-  margin: 5px 0 ;
-}
-
-.home p {
-  margin: 5px 0 ;
+.content p{
+  font-weight: 300;
+  padding: 5px;
 }
 
 table {
@@ -109,18 +144,12 @@ select:focus {
   border: 2px solid rgba(6, 31, 115, 0.58);
 }
 
-.navigation__list li {
+.navigation__list nav{
   color: black;
   letter-spacing: 1px;
   transition: color 0.2s ease-in-out;
   padding: 5px;
 }
-
-.navigation__list .button:hover, .navigation__list .button.active  {
-  box-shadow: 0 4px 4px rgba(0, 0, 0, .2);
-  padding: 5px;
-}
-
 
 .my_pagination {
   display: flex;
@@ -169,7 +198,6 @@ select:focus {
 .pagination-container {
   display: flex;
   align-items: flex-end;
-  justify-content: left;
 }
 
 .pagination-container::after {

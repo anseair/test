@@ -23,7 +23,7 @@ function App() {
                 <div className="col-2 px-2 m-3">
                     <SideBar currentPage={setCurrentPage} />
                 </div>
-                <div className="col-9 py-3 m-3">
+                <div className="col-9 py-3 m-3 row flex-wrap">
                     <Info currentPage={currentPage}/>
                 </div>
             </div>

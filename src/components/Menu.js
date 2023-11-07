@@ -248,7 +248,9 @@ const Menu = () => {
                                 <option>Неактивно</option>
                             </select>
                         </th>
-                        <th><input id="export" type="text" placeholder="Экспорт"/></th>
+                        <th>
+                            <p>Экспорт</p>
+                        </th>
                     </tr>
                     </thead>
                         <tbody id="data"></tbody>

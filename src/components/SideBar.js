@@ -4,6 +4,8 @@ import NavItem from "./NavItem";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchMaxPages, fetchMenu} from "../actions/menuAction";
 import {fetchFilials} from "../actions/filialsAction";
+import img2 from '../Icons/img2.png'
+import iconFirma from '../Icons/iconFirma.png'
 
 //left panel in the application with selection filial and navigation in the app
 const SideBar = () => {
@@ -143,12 +145,19 @@ const SideBar = () => {
             <table className="name">
                 <thead>
                 <tr className="first-row">
-                    <th>НАЗВАНИЕ ФИРМЫ
-                        <p>Лоскутникова В.П.</p>
+                    <th>
+                        <img src={iconFirma} width="35" height="35" className="m-1"/>
+                        <span className="firma">
+                            НАЗВАНИЕ ФИРМЫ
+                            <p>Лоскутникова В.П.</p>
+                        </span>
                     </th>
                 </tr>
                 <tr>
-                    <th>СКЛАДСКОЙ УЧЁТ</th>
+                    <th>
+                        <img src={img2} width="42" height="42"/>
+                        <span className="sklad">СКЛАДСКОЙ УЧЁТ</span>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -163,12 +172,14 @@ const SideBar = () => {
                         </select>
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        <ul className="nav navigation__list">
+                <tr >
+                    {/*<nav>*/}
+                    <td className="nav navigation__list">
+                        {/*<ul className="nav navigation__list">*/}
                             {navItems.map(i => <NavItem key={i.route} item={i} />)}
-                        </ul>
+                        {/*</ul>*/}
                     </td>
+                    {/*</nav>*/}
                 </tr>
                 </tbody>
             </table>
